@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌟 Starlight Maths Tutor 🌟</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Load the script deferred so it runs after HTML is loaded -->
+  <script src="script.js" defer></script> 
+</head>
+<body>
+
+  <h1>⭐ Starlight Maths! ⭐</h1>
+
+  <div class="main-wrapper">
+    
+    <!-- LEFT PANEL: Statistics -->
+    <div class="side-panel stats-panel">
+      <h2>📊 Data</h2>
+      <div class="stat-box stars-box">
+        <div class="stat-label">Starpoints 🌟</div>
+        <div class="stat-value" id="stat-stars">0</div>
+      </div>
+      <div class="stat-box correct-box">
+        <div class="stat-label">Correct ✅</div>
+        <div class="stat-value" id="stat-correct">0</div>
+      </div>
+      <div class="stat-box wrong-box">
+        <div class="stat-label">Incorrect ❌</div>
+        <div class="stat-value" id="stat-wrong" style="color: var(--wrong);">0</div>
+      </div>
+    </div>
+
+    <!-- CENTER PANEL: Main Game -->
+    <div class="container">
+      
+      <!-- Mode Buttons -->
+      <div class="nav-buttons">
+        <button class="btn btn-red" onclick="setMode('add2')">+ 2-Digit</button>
+        <button class="btn btn-red" onclick="setMode('add3')">+ 3-Digit</button>
+        <button class="btn btn-red" onclick="setMode('add4')">+ 4-Digit</button>
+        <button class="btn btn-red" onclick="setMode('add5')">+ 5-Digit</button>
+        <button class="btn btn-red" onclick="setMode('add6')">+ 6-Digit</button>
+      </div>
+      <div class="nav-buttons">
+        <button class="btn btn-orange" onclick="setMode('sub2')">- 2-Digit</button>
+        <button class="btn btn-orange" onclick="setMode('sub3')">- 3-Digit</button>
+        <button class="btn btn-orange" onclick="setMode('sub4')">- 4-Digit</button>
+        <button class="btn btn-orange" onclick="setMode('sub5')">- 5-Digit</button>
+        <button class="btn btn-orange" onclick="setMode('sub6')">- 6-Digit</button>
+      </div>
+      <div class="nav-buttons">
+        <button class="btn btn-blue" onclick="setMode('mult2')">× 2-Digit</button>
+        <button class="btn btn-blue" onclick="setMode('mult3')">× 3-Digit</button>
+        <button class="btn btn-blue" onclick="setMode('mult4')">× 4-Digit</button>
+        <button class="btn btn-blue" onclick="setMode('mult5')">× 5-Digit</button>
+        <button class="btn btn-blue" onclick="setMode('mult6')">× 6-Digit</button>
+      </div>
+      <div class="nav-buttons">
+        <button class="btn btn-green" onclick="setMode('div2')">÷ 2-Digit</button>
+        <button class="btn btn-green" onclick="setMode('div3')">÷ 3-Digit</button>
+        <button class="btn btn-green" onclick="setMode('div4')">÷ 4-Digit</button>
+        <button class="btn btn-green" onclick="setMode('div5')">÷ 5-Digit</button>
+        <button class="btn btn-green" onclick="setMode('div6')">÷ 6-Digit</button>
+      </div>
+
+      <!-- Column Math Interface -->
+      <div id="column-ui" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+        <div id="column-grid" class="grid-container">
+          <!-- Populated by JavaScript -->
+        </div>
+        <button id="btn-check-ans" class="btn btn-check" onclick="checkAnswer()">Final Answer! ✅</button>
+      </div>
+
+      <!-- Helpful Assistant Box -->
+      <div class="tutor-box">
+        <div class="tutor-avatar">🤖</div>
+        <div id="tutor-msg">Start adding from the Ones column! Write any carried numbers in the top yellow boxes! 📦</div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: History -->
+    <div class="side-panel history-panel">
+      <h2>📜 History</h2>
+      <ul id="history-list"></ul>
+    </div>
+
+  </div>
+</body>
+</html>
