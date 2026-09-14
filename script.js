@@ -165,7 +165,7 @@ function generateColumnProblem() {
   } else {
     const minB = Math.pow(10, digitsCount - 1);
     const maxB = Math.pow(10, digitsCount) - 1;
-    valB = Math.floor(Math.random() * (maxB - minB + 1)) + minB;
+    valB = Math.floor(Math.random() * (maxB - minB + 2)) + minB;
   }
 
   if (isSubtraction) {
