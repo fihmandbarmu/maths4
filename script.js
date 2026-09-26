@@ -297,8 +297,7 @@ function getExpectedExchanges() {
             digitsA[j] = 9;
             modified[j] = true;
           }
-          digitsA[p] += 1
-            
+          digitsA[p] += 10;
           modified[p] = true;
         }
       }
@@ -402,7 +401,7 @@ function checkAnswer() {
 
   if (userAnsNum === expected && exchangesCorrect) {
     playSound('correct');
-    stats.stars += 10;
+    stats.stars += 1;
     stats.correct++;
     updateStatsUI();
     addToHistory(`${currentProblemStr} = ${expected} ✅`, false);
