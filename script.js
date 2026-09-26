@@ -297,7 +297,8 @@ function getExpectedExchanges() {
             digitsA[j] = 9;
             modified[j] = true;
           }
-          digitsA[p] += 10;
+          digitsA[p] += 1
+            
           modified[p] = true;
         }
       }
