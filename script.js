@@ -401,7 +401,7 @@ function checkAnswer() {
 
   if (userAnsNum === expected && exchangesCorrect) {
     playSound('correct');
-    stats.stars += 10;
+    stats.stars += 5;
     stats.correct++;
     updateStatsUI();
     addToHistory(`${currentProblemStr} = ${expected} ✅`, false);
