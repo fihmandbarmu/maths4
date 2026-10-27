@@ -163,7 +163,7 @@ h1 {
 .btn-purple { background-color: #B28DFF; }
 .btn-green { background-color: var(--correct); }
 .btn-blue { background-color: var(--division); color: white; }
-.btn-check { width: 100%; margin-top: 15px; font-size: 1.3rem; padding: 12px; background-color: var(--correct); color: #000;}
+.btn-check { width: 100%; margin-top: 15px; font-size: 1.3rem; padding: 12px; background-color: var(--correct); color: #006;}
 
 /* Maths Grid */
 .grid-container {
