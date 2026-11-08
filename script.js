@@ -65,11 +65,14 @@ function getCorrectPoints() {
   return digitsCount <= 6 ? 10 : digitsCount <= 11 ? 15 : 20;
 }
 
-function getPenaltyPoints() {
-  const redPenalty = digitsCount <= 6 ? 1 : digitsCount <= 11 ? 2 : 3;
-  if (currentMode.startsWith('sub')) return 0;
-  if (currentMode.startsWith('mult')) return redPenalty * 2;
-  return redPenalty;
+// The first incorrect attempt is free. Other operations increase the
+// deduction on the third and later consecutive mistakes. Division uses
+// two-attempt penalty tiers: 0, then 1 point, then 2 points, and so on.
+function getPenaltyPoints(wrongAttempt) {
+  if (isDivision) return Math.floor((wrongAttempt - 1) / 2);
+  const basePenalty = digitsCount <= 6 ? 1 : digitsCount <= 11 ? 2 : 3;
+  if (wrongAttempt === 1) return 0;
+  return basePenalty * Math.min(wrongAttempt - 1, 2);
 }
 
 function setMode(mode) {
@@ -297,9 +300,9 @@ function checkAnswer() {
   }
 
   playSound('wrong');
-  stats.stars -= getPenaltyPoints();
-  stats.wrong++;
   consecutiveWrongs++;
+  stats.stars -= getPenaltyPoints(consecutiveWrongs);
+  stats.wrong++;
   updateStatsUI();
   addToHistory(`${currentProblemStr} = ${userAnswer} ❌`, true);
   document.getElementById('tutor-msg').textContent = `Not quite—check the answer and yellow carry boxes. The answer is ${expected}.`;
