@@ -187,7 +187,7 @@ function generateColumnProblem() {
 
   const allHeaders = ['M', 'HTh', 'TTh', 'Th', 'H', 'T', 'O'];
   const headers = allHeaders.slice(allHeaders.length - cols);
-  headers.forEach(h => grid.appendChild(createCell(h, 'place-header')));
+  headers.forEach(h => grid.appendChild(createCell(h, 'place-header'));
 
   grid.appendChild(createCell('')); 
   for (let i = 1; i < cols; i++) {
@@ -205,19 +205,6 @@ function generateColumnProblem() {
       playSound('exchange');
     };
     grid.appendChild(carryInput);
-  }
-
-  if (isSubtraction) {
-    grid.appendChild(createCell(''));
-    for (let i = 0; i < cols - 1; i++) {
-      const crossInput = document.createElement('input');
-      crossInput.type = 'text';
-      crossInput.maxLength = 1;
-      crossInput.className = 'cross-box';
-      crossInput.placeholder = "/";
-      attachInputSanitizer(crossInput, 'cross');
-      grid.appendChild(crossInput);
-    }
   }
 
   const strA = numA.toString().padStart(cols - 1, ' ');
@@ -243,7 +230,7 @@ function generateColumnProblem() {
   }
 
   if (isSubtraction) {
-    document.getElementById('tutor-msg').innerHTML = `Need to borrow? Type a <b>/</b> in the red box to cross out, then write the new value in the top box! ✂️`;
+    document.getElementById('tutor-msg').innerHTML = `Need to borrow? Type the new value in the top yellow boxes! ✂️`;
   } else if (currentMode.startsWith('mult')) {
     document.getElementById('tutor-msg').innerHTML = `Multiply from right to left! Carry any tens to the top yellow boxes! 🚀`;
   } else {
@@ -482,7 +469,7 @@ function checkAnswer() {
   
   if (consecutiveWrongs >= 3) {
       if (currentMode.startsWith('add')) hintText += "Make sure you add any 1s you carried over to the top!";
-      if (isSubtraction) hintText += "If the top number is smaller, you MUST cross out the neighbor and borrow 10!";
+      if (isSubtraction) hintText += "If the top number is smaller, write the new value in the top yellow box!";
       if (currentMode.startsWith('mult')) hintText += "Multiply the bottom number by the top digit, and add your carried tens!";
       if (isDivision) hintText += "Check your remainders as you divide left to right!";
   } else {
