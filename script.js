@@ -66,7 +66,10 @@ function getCorrectPoints() {
 }
 
 function getPenaltyPoints() {
-  return digitsCount <= 6 ? 1 : digitsCount <= 11 ? 2 : 3;
+  const redPenalty = digitsCount <= 6 ? 1 : digitsCount <= 11 ? 2 : 3;
+  if (currentMode.startsWith('sub')) return 0;
+  if (currentMode.startsWith('mult')) return redPenalty * 2;
+  return redPenalty;
 }
 
 function setMode(mode) {
@@ -294,6 +297,7 @@ function checkAnswer() {
   }
 
   playSound('wrong');
+  stats.stars -= getPenaltyPoints();
   stats.wrong++;
   consecutiveWrongs++;
   updateStatsUI();
