@@ -286,7 +286,7 @@ function checkAnswer() {
   }
 
   playSound('wrong');
-  stats.stars--;
+  stats.stars -= digitsCount <= 6 ? 1 : digitsCount <= 11 ? 2 : 3;
   stats.wrong++;
   consecutiveWrongs++;
   updateStatsUI();
