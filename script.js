@@ -168,14 +168,18 @@ function generateColumnProblem() {
     valB = Math.floor(Math.random() * (maxB - minB + 2)) + minB;
   }
 
-  if (isSubtraction) {
-    numA = Math.max(valA, valB);
-    numB = Math.min(valA, valB);
-  } else {
-    numA = valA;
-    numB = valB;
+if (isSubtraction) {
+  grid.appendChild(createCell(''));
+  for (let i = 0; i < cols - 1; i++) {
+    const crossInput = document.createElement('input');
+    crossInput.type = 'text';
+    crossInput.maxLength = 1;
+    crossInput.className = 'cross-box';
+    crossInput.placeholder = "/";
+    attachInputSanitizer(crossInput, 'cross');
+    grid.appendChild(crossInput);
   }
-
+}
   const operatorSymbol = isSubtraction ? '-' : (currentMode.startsWith('mult') ? '×' : '+');
   currentProblemStr = `${numA} ${operatorSymbol} ${numB}`;
 
@@ -230,7 +234,7 @@ function generateColumnProblem() {
   }
 
   if (isSubtraction) {
-    document.getElementById('tutor-msg').innerHTML = `Need to borrow? Type the new value in the top yellow boxes! ✂️`;
+    document.getElementById('tutor-msg').innerHTML = `Need to borrow? Type a <b>/</b> in the red box to cross out, then write the new value in the top box! ✂️`;
   } else if (currentMode.startsWith('mult')) {
     document.getElementById('tutor-msg').innerHTML = `Multiply from right to left! Carry any tens to the top yellow boxes! 🚀`;
   } else {
