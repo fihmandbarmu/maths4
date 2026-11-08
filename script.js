@@ -61,6 +61,15 @@ function createCell(text = '', className = 'cell') {
   return cell;
 }
 
+function getCorrectPoints() {
+  return digitsCount <= 6 ? 10 : digitsCount <= 11 ? 15 : 20;
+}
+
+function getPenaltyPoints() {
+  if (currentMode.startsWith('sub')) return 0;
+  return digitsCount <= 6 ? 1 : digitsCount <= 11 ? 2 : 3;
+}
+
 function setMode(mode) {
   if (isProcessing) return;
   currentMode = mode;
@@ -271,7 +280,7 @@ function checkAnswer() {
 
   if (userAnswer === expected && exchangesCorrect) {
     playSound('correct');
-    stats.stars += digitsCount <= 6 ? 10 : digitsCount <= 11 ? 15 : 20;
+    stats.stars += getCorrectPoints();
     stats.correct++;
     updateStatsUI();
     addToHistory(`${currentProblemStr} = ${expected} ✅`);
@@ -286,7 +295,7 @@ function checkAnswer() {
   }
 
   playSound('wrong');
-  stats.stars -= digitsCount <= 6 ? 1 : digitsCount <= 11 ? 2 : 3;
+  stats.stars -= getPenaltyPoints();
   stats.wrong++;
   consecutiveWrongs++;
   updateStatsUI();
