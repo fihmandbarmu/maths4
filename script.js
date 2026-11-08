@@ -271,7 +271,7 @@ function checkAnswer() {
 
   if (userAnswer === expected && exchangesCorrect) {
     playSound('correct');
-    stats.stars += 5;
+    stats.stars += digitsCount <= 6 ? 10 : digitsCount <= 11 ? 15 : 20;
     stats.correct++;
     updateStatsUI();
     addToHistory(`${currentProblemStr} = ${expected} ✅`);
