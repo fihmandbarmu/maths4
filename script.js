@@ -9,7 +9,7 @@ let isProcessing = false;
 
 // Tracking Variables
 let stats = { stars: 0, correct: 0, wrong: 0 };
-let consecutiveWrongs = 0; 
+let consecutiveWrongs = 0;
 let currentProblemStr = "";
 
 // Place names ordered right to left (0 = Ones, 1 = Tens, ...)
@@ -49,7 +49,7 @@ function playSound(type) {
 // Input sanitizer: strictly restricts allowed characters
 function attachInputSanitizer(input, type = 'number') {
   input.addEventListener('input', function() {
-    this.classList.remove('empty-error', 'wrong-input'); // Clear error states on type
+    this.classList.remove('empty-error', 'wrong-input');
     if (type === 'number') {
       this.value = this.value.replace(/[^0-9]/g, '');
     } else if (type === 'cross') {
@@ -74,12 +74,12 @@ function addToHistory(logText, isWrong = false) {
 }
 
 function setMode(mode) {
-  if (isProcessing) return; 
+  if (isProcessing) return;
   currentMode = mode;
-  digitsCount = parseInt(mode.replace(/\D/g, ''), 10) || 2; 
+  digitsCount = parseInt(mode.replace(/\D/g, ''), 10) || 2;
   isSubtraction = mode.startsWith('sub');
   isDivision = mode.startsWith('div');
-  
+
   if (isDivision) {
     generateDivisionProblem();
   } else {
@@ -89,12 +89,12 @@ function setMode(mode) {
 
 function generateDivisionProblem() {
   consecutiveWrongs = 0;
-  
+
   const minA = Math.pow(10, digitsCount - 1);
   const maxA = Math.pow(10, digitsCount) - 1;
-  
-  numB = Math.floor(Math.random() * 8) + 2; 
-  
+
+  numB = Math.floor(Math.random() * 8) + 2;
+
   let tempA = Math.floor(Math.random() * (maxA - minA + 1)) + minA;
   tempA = tempA - (tempA % numB);
   if (tempA < minA) tempA += numB;
@@ -104,7 +104,6 @@ function generateDivisionProblem() {
 
   const grid = document.getElementById('column-grid');
   grid.innerHTML = '';
-  
   grid.style.gridTemplateColumns = `40px 20px repeat(${digitsCount}, 60px)`;
 
   grid.appendChild(createCell(''));
@@ -129,11 +128,9 @@ function generateDivisionProblem() {
   grid.appendChild(createCell(numB));
   grid.appendChild(createCell(')'));
   const strA = numA.toString();
-  for (let char of strA) {
-    grid.appendChild(createCell(char));
-  }
+  for (let char of strA) grid.appendChild(createCell(char));
 
-  for(let row = 0; row < 2; row++) {
+  for (let row = 0; row < 2; row++) {
     grid.appendChild(createCell(''));
     grid.appendChild(createCell(''));
     for (let i = 0; i < digitsCount; i++) {
@@ -147,55 +144,51 @@ function generateDivisionProblem() {
     }
   }
 
-  document.getElementById('tutor-msg').innerHTML = 
+  document.getElementById('tutor-msg').innerHTML =
     `Divide from left to right! Type your answers in the green boxes on top. Use the blue dotted boxes to write your remainders! ➗`;
 }
 
 function generateColumnProblem() {
-  consecutiveWrongs = 0; 
-  
+  consecutiveWrongs = 0;
+
   const minA = Math.pow(10, digitsCount - 1);
   const maxA = Math.pow(10, digitsCount) - 1;
-  
+
   let valA = Math.floor(Math.random() * (maxA - minA + 1)) + minA;
   let valB;
 
   if (currentMode.startsWith('mult')) {
-    valB = Math.floor(Math.random() * 8) + 2; 
+    valB = Math.floor(Math.random() * 8) + 2;
   } else {
     const minB = Math.pow(10, digitsCount - 1);
     const maxB = Math.pow(10, digitsCount) - 1;
     valB = Math.floor(Math.random() * (maxB - minB + 2)) + minB;
   }
 
-if (isSubtraction) {
-  grid.appendChild(createCell(''));
-  for (let i = 0; i < cols - 1; i++) {
-    const crossInput = document.createElement('input');
-    crossInput.type = 'text';
-    crossInput.maxLength = 1;
-    crossInput.className = 'cross-box';
-    crossInput.placeholder = "/";
-    attachInputSanitizer(crossInput, 'cross');
-    grid.appendChild(crossInput);
+  if (isSubtraction) {
+    numA = Math.max(valA, valB);
+    numB = Math.min(valA, valB);
+  } else {
+    numA = valA;
+    numB = valB;
   }
-}
+
   const operatorSymbol = isSubtraction ? '-' : (currentMode.startsWith('mult') ? '×' : '+');
   currentProblemStr = `${numA} ${operatorSymbol} ${numB}`;
 
   const grid = document.getElementById('column-grid');
   grid.innerHTML = '';
-  
-  const cols = digitsCount + 1; 
+
+  const cols = digitsCount + 1;
   grid.style.gridTemplateColumns = `repeat(${cols}, 65px)`;
 
   const allHeaders = ['M', 'HTh', 'TTh', 'Th', 'H', 'T', 'O'];
   const headers = allHeaders.slice(allHeaders.length - cols);
-  headers.forEach(h => grid.appendChild(createCell(h, 'place-header'));
+  headers.forEach(h => grid.appendChild(createCell(h, 'place-header')));
 
-  grid.appendChild(createCell('')); 
+  grid.appendChild(createCell(''));
   for (let i = 1; i < cols; i++) {
-    const placeIdx = cols - 1 - i; 
+    const placeIdx = cols - 1 - i;
     const carryInput = document.createElement('input');
     carryInput.type = 'text';
     carryInput.maxLength = 2;
@@ -212,7 +205,7 @@ if (isSubtraction) {
   }
 
   const strA = numA.toString().padStart(cols - 1, ' ');
-  grid.appendChild(createCell('')); 
+  grid.appendChild(createCell(''));
   for (let char of strA) grid.appendChild(createCell(char));
 
   const strB = numB.toString().padStart(cols - 1, ' ');
@@ -228,13 +221,13 @@ if (isSubtraction) {
     ansInput.type = 'text';
     ansInput.maxLength = 1;
     ansInput.className = 'answer-input';
-    ansInput.id = `ans-${cols - 1 - i}`; 
+    ansInput.id = `ans-${cols - 1 - i}`;
     attachInputSanitizer(ansInput, 'number');
     grid.appendChild(ansInput);
   }
 
   if (isSubtraction) {
-    document.getElementById('tutor-msg').innerHTML = `Need to borrow? Type a <b>/</b> in the red box to cross out, then write the new value in the top box! ✂️`;
+    document.getElementById('tutor-msg').innerHTML = `Need to borrow? Write the new value in the top yellow box! ✂️`;
   } else if (currentMode.startsWith('mult')) {
     document.getElementById('tutor-msg').innerHTML = `Multiply from right to left! Carry any tens to the top yellow boxes! 🚀`;
   } else {
@@ -308,16 +301,16 @@ function checkAnswer() {
   checkBtn.disabled = true;
 
   let expected;
-  if (isDivision) { expected = numA / numB; } 
-  else if (isSubtraction) { expected = numA - numB; } 
-  else if (currentMode.startsWith('mult')) { expected = numA * numB; } 
-  else { expected = numA + numB; }
+  if (isDivision) expected = numA / numB;
+  else if (isSubtraction) expected = numA - numB;
+  else if (currentMode.startsWith('mult')) expected = numA * numB;
+  else expected = numA + numB;
 
   let userAnsStr = '';
   let hasInput = false;
-  let emptyBoxes = []; // To track for our error state improvement
+  let emptyBoxes = [];
   const cols = isDivision ? digitsCount : digitsCount + 1;
-  
+
   if (isDivision) {
     for (let i = 0; i < digitsCount; i++) {
       const inputEl = document.getElementById(`ans-div-${i}`);
@@ -336,14 +329,12 @@ function checkAnswer() {
     }
   }
 
-  // Improved Error Handling: Highlighting empty required boxes
   if (!hasInput) {
     document.getElementById('tutor-msg').innerHTML = "Don't forget to type in your answer before checking! 🤔";
     playSound('wrong');
     emptyBoxes.forEach(box => {
-      // Force trigger animation reset
       box.classList.remove('empty-error');
-      void box.offsetWidth; 
+      void box.offsetWidth;
       box.classList.add('empty-error');
     });
     isProcessing = false;
@@ -366,23 +357,20 @@ function checkAnswer() {
             carryElem.classList.add('correct-input');
             carryElem.classList.remove('wrong-input');
           } else {
-            // Force animation restart for error improvement
             carryElem.classList.remove('wrong-input');
-            void carryElem.offsetWidth; 
+            void carryElem.offsetWidth;
             carryElem.classList.add('wrong-input');
             carryElem.classList.remove('correct-input');
             exchangesCorrect = false;
           }
+        } else if (userVal !== "" && userVal !== "0") {
+          carryElem.classList.remove('wrong-input');
+          void carryElem.offsetWidth;
+          carryElem.classList.add('wrong-input');
+          carryElem.classList.remove('correct-input');
+          exchangesCorrect = false;
         } else {
-          if (userVal !== "" && userVal !== "0") {
-            carryElem.classList.remove('wrong-input');
-            void carryElem.offsetWidth; 
-            carryElem.classList.add('wrong-input');
-            carryElem.classList.remove('correct-input');
-            exchangesCorrect = false;
-          } else {
-            carryElem.classList.remove('wrong-input', 'correct-input');
-          }
+          carryElem.classList.remove('wrong-input', 'correct-input');
         }
       }
     }
@@ -396,7 +384,7 @@ function checkAnswer() {
     stats.correct++;
     updateStatsUI();
     addToHistory(`${currentProblemStr} = ${expected} ✅`, false);
-    
+
     document.getElementById('tutor-msg').innerText = "Super star work! Fantastic calculation! 🌟";
     setTimeout(() => {
       isDivision ? generateDivisionProblem() : generateColumnProblem();
@@ -415,49 +403,48 @@ function checkAnswer() {
   let wrongPlaces = [];
   let formattedUserAns = "";
   let expStr = expected.toString();
-  
-  if (isDivision) {
-     let paddedExp = expStr.padStart(digitsCount, ' ');
-     for (let i = 0; i < digitsCount; i++) {
-        let uInput = document.getElementById(`ans-div-${i}`);
-        let uVal = uInput.value.trim();
-        formattedUserAns += uVal === '' ? '_' : uVal;
-        let expChar = paddedExp[i];
-        let isZeroSpaceEquivalent = (expChar === ' ' && uVal === '0') || (expChar === '0' && uVal === '');
-        
-        if (uVal !== expChar && !isZeroSpaceEquivalent) {
-            uInput.classList.remove('wrong-input');
-            void uInput.offsetWidth; 
-            uInput.classList.add('wrong-input');
-            let placeIndex = digitsCount - 1 - i;
-            wrongPlaces.push(PLACE_NAMES[placeIndex] || `Col ${placeIndex + 1}`);
-        } else {
-            uInput.classList.remove('wrong-input');
-        }
-     }
-  } else {
-     let paddedExp = expStr.padStart(cols, ' ');
-     for (let i = cols - 1; i >= 0; i--) {
-        let uInput = document.getElementById(`ans-${i}`);
-        let uVal = uInput.value.trim();
-        formattedUserAns += uVal === '' ? '_' : uVal;
-        let expCharIndex = cols - 1 - i;
-        let expChar = paddedExp[expCharIndex];
-        
-        let isZeroSpaceEquivalent = (expChar === ' ' && uVal === '0');
 
-        if (uVal !== expChar && !isZeroSpaceEquivalent) {
-            uInput.classList.remove('wrong-input');
-            void uInput.offsetWidth; 
-            uInput.classList.add('wrong-input');
-            wrongPlaces.push(PLACE_NAMES[i] || `Col ${i + 1}`);
-        } else {
-            uInput.classList.remove('wrong-input');
-        }
-     }
+  if (isDivision) {
+    let paddedExp = expStr.padStart(digitsCount, ' ');
+    for (let i = 0; i < digitsCount; i++) {
+      let uInput = document.getElementById(`ans-div-${i}`);
+      let uVal = uInput.value.trim();
+      formattedUserAns += uVal === '' ? '_' : uVal;
+      let expChar = paddedExp[i];
+      let isZeroSpaceEquivalent = (expChar === ' ' && uVal === '0') || (expChar === '0' && uVal === '');
+
+      if (uVal !== expChar && !isZeroSpaceEquivalent) {
+        uInput.classList.remove('wrong-input');
+        void uInput.offsetWidth;
+        uInput.classList.add('wrong-input');
+        let placeIndex = digitsCount - 1 - i;
+        wrongPlaces.push(PLACE_NAMES[placeIndex] || `Col ${placeIndex + 1}`);
+      } else {
+        uInput.classList.remove('wrong-input');
+      }
+    }
+  } else {
+    let paddedExp = expStr.padStart(cols, ' ');
+    for (let i = cols - 1; i >= 0; i--) {
+      let uInput = document.getElementById(`ans-${i}`);
+      let uVal = uInput.value.trim();
+      formattedUserAns += uVal === '' ? '_' : uVal;
+      let expCharIndex = cols - 1 - i;
+      let expChar = paddedExp[expCharIndex];
+      let isZeroSpaceEquivalent = (expChar === ' ' && uVal === '0');
+
+      if (uVal !== expChar && !isZeroSpaceEquivalent) {
+        uInput.classList.remove('wrong-input');
+        void uInput.offsetWidth;
+        uInput.classList.add('wrong-input');
+        wrongPlaces.push(PLACE_NAMES[i] || `Col ${i + 1}`);
+      } else {
+        uInput.classList.remove('wrong-input');
+      }
+    }
   }
 
-  formattedUserAns = formattedUserAns.replace(/^_+/, ''); 
+  formattedUserAns = formattedUserAns.replace(/^_+/, '');
   if (formattedUserAns === '') formattedUserAns = '0';
   addToHistory(`${currentProblemStr} = ${formattedUserAns} ❌`, true);
 
@@ -470,18 +457,18 @@ function checkAnswer() {
   if (!exchangesCorrect) {
     hintText += `Check your top yellow carry/exchange boxes too!<br>`;
   }
-  
+
   if (consecutiveWrongs >= 3) {
-      if (currentMode.startsWith('add')) hintText += "Make sure you add any 1s you carried over to the top!";
-      if (isSubtraction) hintText += "If the top number is smaller, write the new value in the top yellow box!";
-      if (currentMode.startsWith('mult')) hintText += "Multiply the bottom number by the top digit, and add your carried tens!";
-      if (isDivision) hintText += "Check your remainders as you divide left to right!";
+    if (currentMode.startsWith('add')) hintText += "Make sure you add any 1s you carried over to the top!";
+    if (isSubtraction) hintText += "If the top number is smaller, write the new value in the top yellow box!";
+    if (currentMode.startsWith('mult')) hintText += "Multiply the bottom number by the top digit, and add your carried tens!";
+    if (isDivision) hintText += "Check your remainders as you divide left to right!";
   } else {
-      hintText += "Try fixing those specific boxes! You can do it! 💪";
+    hintText += "Try fixing those specific boxes! You can do it! 💪";
   }
 
   document.getElementById('tutor-msg').innerHTML = hintText;
-  
+
   setTimeout(() => {
     isProcessing = false;
     checkBtn.disabled = false;
