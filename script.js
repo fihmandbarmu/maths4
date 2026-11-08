@@ -1,169 +1,134 @@
-let currentMode = '';
+let currentMode = 'add2';
 let digitsCount = 2;
 let isSubtraction = false;
 let isDivision = false;
-let numA = 0, numB = 0;
-
-// Lock flag to prevent double clicking
+let numA = 0;
+let numB = 0;
 let isProcessing = false;
-
-// Tracking Variables
 let stats = { stars: 0, correct: 0, wrong: 0 };
 let consecutiveWrongs = 0;
-let currentProblemStr = "";
+let currentProblemStr = '';
 
-// Place names ordered right to left (0 = Ones, 1 = Tens, ...)
-const PLACE_NAMES = ['O', 'T', 'H', 'Th', 'TTh', 'HTh', 'M'];
+const PLACE_NAMES = ['Ones', 'Tens', 'Hundreds', 'Thousands', 'Ten-thousands', 'Hundred-thousands', 'Millions', 'Ten-millions', 'Hundred-millions', 'Billions', 'Ten-billions', 'Hundred-billions', 'Trillions'];
+const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+const audioCtx = AudioContextClass ? new AudioContextClass() : null;
 
-// Web Audio FX
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 function playSound(type) {
+  if (!audioCtx) return;
   try {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
     osc.connect(gain);
     gain.connect(audioCtx.destination);
-    if (type === 'correct') {
-      osc.frequency.setValueAtTime(300, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.3);
-      gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-      osc.start(); osc.stop(audioCtx.currentTime + 0.3);
-    } else if (type === 'exchange') {
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(500, audioCtx.currentTime);
-      osc.frequency.setValueAtTime(700, audioCtx.currentTime + 0.1);
-      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
-      osc.start(); osc.stop(audioCtx.currentTime + 0.2);
-    } else {
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(180, audioCtx.currentTime);
-      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
-      osc.start(); osc.stop(audioCtx.currentTime + 0.2);
-    }
-  } catch(e) {}
+    osc.type = type === 'exchange' ? 'triangle' : type === 'correct' ? 'sine' : 'sawtooth';
+    const startFrequency = type === 'correct' ? 300 : type === 'exchange' ? 500 : 180;
+    osc.frequency.setValueAtTime(startFrequency, audioCtx.currentTime);
+    if (type === 'correct') osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.3);
+    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.3);
+  } catch (error) {
+    // Sound is optional; a browser audio limitation must not stop the maths game.
+  }
 }
 
-// Input sanitizer: strictly restricts allowed characters
-function attachInputSanitizer(input, type = 'number') {
-  input.addEventListener('input', function() {
-    this.classList.remove('empty-error', 'wrong-input');
-    if (type === 'number') {
-      this.value = this.value.replace(/[^0-9]/g, '');
-    } else if (type === 'cross') {
-      this.value = this.value.replace(/[^0-9/]/g, '');
-    }
+function attachInputSanitizer(input) {
+  input.addEventListener('input', () => {
+    input.value = input.value.replace(/[^0-9]/g, '');
+    input.classList.remove('empty-error', 'wrong-input', 'correct-input');
   });
 }
 
 function updateStatsUI() {
-  document.getElementById('stat-stars').innerText = stats.stars;
-  document.getElementById('stat-correct').innerText = stats.correct;
-  document.getElementById('stat-wrong').innerText = stats.wrong;
+  document.getElementById('stat-stars').textContent = stats.stars;
+  document.getElementById('stat-correct').textContent = stats.correct;
+  document.getElementById('stat-wrong').textContent = stats.wrong;
 }
 
-function addToHistory(logText, isWrong = false) {
-  const list = document.getElementById('history-list');
-  const li = document.createElement('li');
-  li.className = 'history-item';
-  if (isWrong) li.classList.add('wrong');
-  li.innerText = logText;
-  list.prepend(li);
+function addToHistory(text, isWrong = false) {
+  const item = document.createElement('li');
+  item.className = `history-item${isWrong ? ' wrong' : ''}`;
+  item.textContent = text;
+  document.getElementById('history-list').prepend(item);
+}
+
+function createCell(text = '', className = 'cell') {
+  const cell = document.createElement('div');
+  cell.className = className;
+  cell.textContent = text;
+  return cell;
 }
 
 function setMode(mode) {
   if (isProcessing) return;
   currentMode = mode;
-  digitsCount = parseInt(mode.replace(/\D/g, ''), 10) || 2;
+  digitsCount = Math.max(2, Math.min(12, parseInt(mode.replace(/\D/g, ''), 10) || 2));
   isSubtraction = mode.startsWith('sub');
   isDivision = mode.startsWith('div');
-
-  if (isDivision) {
-    generateDivisionProblem();
-  } else {
-    generateColumnProblem();
-  }
+  if (isDivision) generateDivisionProblem();
+  else generateColumnProblem();
 }
 
 function generateDivisionProblem() {
   consecutiveWrongs = 0;
-
-  const minA = Math.pow(10, digitsCount - 1);
-  const maxA = Math.pow(10, digitsCount) - 1;
-
+  const min = 10 ** (digitsCount - 1);
+  const max = 10 ** digitsCount - 1;
   numB = Math.floor(Math.random() * 8) + 2;
-
-  let tempA = Math.floor(Math.random() * (maxA - minA + 1)) + minA;
-  tempA = tempA - (tempA % numB);
-  if (tempA < minA) tempA += numB;
-  numA = tempA;
-
+  const minQuotient = Math.ceil(min / numB);
+  const maxQuotient = Math.floor(max / numB);
+  numA = (Math.floor(Math.random() * (maxQuotient - minQuotient + 1)) + minQuotient) * numB;
   currentProblemStr = `${numA} ÷ ${numB}`;
+  document.getElementById('problem-question').textContent = currentProblemStr;
 
   const grid = document.getElementById('column-grid');
-  grid.innerHTML = '';
+  grid.replaceChildren();
   grid.style.gridTemplateColumns = `40px 20px repeat(${digitsCount}, 60px)`;
 
-  grid.appendChild(createCell(''));
-  grid.appendChild(createCell(''));
+  grid.append(createCell(''), createCell(''));
   for (let i = 0; i < digitsCount; i++) {
     const input = document.createElement('input');
     input.type = 'text';
+    input.inputMode = 'numeric';
     input.maxLength = 1;
     input.className = 'answer-input';
     input.id = `ans-div-${i}`;
-    attachInputSanitizer(input, 'number');
+    attachInputSanitizer(input);
     grid.appendChild(input);
   }
 
-  grid.appendChild(createCell(''));
-  grid.appendChild(createCell(''));
-  const line = document.createElement('div');
-  line.className = 'div-line';
-  line.style.gridColumn = `3 / -1`;
+  grid.append(createCell(''), createCell(''));
+  const line = createCell('', 'div-line');
+  line.style.gridColumn = '3 / -1';
   grid.appendChild(line);
-
-  grid.appendChild(createCell(numB));
-  grid.appendChild(createCell(')'));
-  const strA = numA.toString();
-  for (let char of strA) grid.appendChild(createCell(char));
+  grid.append(createCell(numB), createCell(')'));
+  for (const digit of String(numA)) grid.appendChild(createCell(digit));
 
   for (let row = 0; row < 2; row++) {
-    grid.appendChild(createCell(''));
-    grid.appendChild(createCell(''));
+    grid.append(createCell(''), createCell(''));
     for (let i = 0; i < digitsCount; i++) {
-      const workInput = document.createElement('input');
-      workInput.type = 'text';
-      workInput.maxLength = 2;
-      workInput.className = 'exchange-box working-box';
-      workInput.placeholder = "rem";
-      attachInputSanitizer(workInput, 'number');
-      grid.appendChild(workInput);
+      const work = document.createElement('input');
+      work.type = 'text';
+      work.inputMode = 'numeric';
+      work.maxLength = 2;
+      work.className = 'exchange-box working-box';
+      work.placeholder = 'rem';
+      attachInputSanitizer(work);
+      grid.appendChild(work);
     }
   }
-
-  document.getElementById('tutor-msg').innerHTML =
-    `Divide from left to right! Type your answers in the green boxes on top. Use the blue dotted boxes to write your remainders! ➗`;
+  document.getElementById('tutor-msg').textContent = 'Divide from left to right. Enter the quotient in the green boxes.';
 }
 
 function generateColumnProblem() {
   consecutiveWrongs = 0;
-
-  const minA = Math.pow(10, digitsCount - 1);
-  const maxA = Math.pow(10, digitsCount) - 1;
-
-  let valA = Math.floor(Math.random() * (maxA - minA + 1)) + minA;
-  let valB;
-
-  if (currentMode.startsWith('mult')) {
-    valB = Math.floor(Math.random() * 8) + 2;
-  } else {
-    const minB = Math.pow(10, digitsCount - 1);
-    const maxB = Math.pow(10, digitsCount) - 1;
-    valB = Math.floor(Math.random() * (maxB - minB + 2)) + minB;
-  }
+  const min = 10 ** (digitsCount - 1);
+  const max = 10 ** digitsCount - 1;
+  const valA = Math.floor(Math.random() * (max - min + 1)) + min;
+  const valB = currentMode.startsWith('mult')
+    ? Math.floor(Math.random() * 8) + 2
+    : Math.floor(Math.random() * (max - min + 1)) + min;
 
   if (isSubtraction) {
     numA = Math.max(valA, valB);
@@ -172,123 +137,96 @@ function generateColumnProblem() {
     numA = valA;
     numB = valB;
   }
-
-  const operatorSymbol = isSubtraction ? '-' : (currentMode.startsWith('mult') ? '×' : '+');
-  currentProblemStr = `${numA} ${operatorSymbol} ${numB}`;
+  const operator = isSubtraction ? '-' : currentMode.startsWith('mult') ? '×' : '+';
+  currentProblemStr = `${numA} ${operator} ${numB}`;
+  document.getElementById('problem-question').textContent = currentProblemStr;
 
   const grid = document.getElementById('column-grid');
-  grid.innerHTML = '';
-
+  grid.replaceChildren();
   const cols = digitsCount + 1;
   grid.style.gridTemplateColumns = `repeat(${cols}, 65px)`;
 
-  const allHeaders = ['M', 'HTh', 'TTh', 'Th', 'H', 'T', 'O'];
-  const headers = allHeaders.slice(allHeaders.length - cols);
-  headers.forEach(h => grid.appendChild(createCell(h, 'place-header')));
+  const labels = ['Tn', 'Hn', 'Tb', 'Bn', 'Hm', 'Tm', 'M', 'HTh', 'TTh', 'Th', 'H', 'T', 'O'];
+  labels.slice(labels.length - cols).forEach(label => grid.appendChild(createCell(label, 'place-header')));
 
   grid.appendChild(createCell(''));
-  for (let i = 1; i < cols; i++) {
-    const placeIdx = cols - 1 - i;
-    const carryInput = document.createElement('input');
-    carryInput.type = 'text';
-    carryInput.maxLength = 2;
-    carryInput.className = 'exchange-box';
-    carryInput.id = `carry-${placeIdx}`;
-    carryInput.placeholder = isSubtraction ? "new" : "1";
-    attachInputSanitizer(carryInput, 'number');
-    carryInput.oninput = () => {
-      carryInput.value = carryInput.value.replace(/[^0-9]/g, '');
-      carryInput.classList.remove('wrong-input', 'correct-input');
-      playSound('exchange');
-    };
-    grid.appendChild(carryInput);
+  for (let p = digitsCount - 1; p >= 0; p--) {
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.inputMode = 'numeric';
+    input.maxLength = 2;
+    input.className = 'exchange-box';
+    input.id = `carry-${p}`;
+    input.placeholder = isSubtraction ? 'new' : '1';
+    attachInputSanitizer(input);
+    grid.appendChild(input);
   }
 
-  const strA = numA.toString().padStart(cols - 1, ' ');
   grid.appendChild(createCell(''));
-  for (let char of strA) grid.appendChild(createCell(char));
+  for (const digit of String(numA).padStart(digitsCount, ' ')) grid.appendChild(createCell(digit));
+  grid.appendChild(createCell(operator));
+  for (const digit of String(numB).padStart(digitsCount, ' ')) grid.appendChild(createCell(digit));
 
-  const strB = numB.toString().padStart(cols - 1, ' ');
-  grid.appendChild(createCell(operatorSymbol));
-  for (let char of strB) grid.appendChild(createCell(char));
-
-  const line = document.createElement('div');
-  line.className = 'line';
+  const line = createCell('', 'line');
+  line.style.gridColumn = '1 / -1';
   grid.appendChild(line);
 
   for (let i = 0; i < cols; i++) {
-    const ansInput = document.createElement('input');
-    ansInput.type = 'text';
-    ansInput.maxLength = 1;
-    ansInput.className = 'answer-input';
-    ansInput.id = `ans-${cols - 1 - i}`;
-    attachInputSanitizer(ansInput, 'number');
-    grid.appendChild(ansInput);
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.inputMode = 'numeric';
+    input.maxLength = 1;
+    input.className = 'answer-input';
+    input.id = `ans-${cols - 1 - i}`;
+    attachInputSanitizer(input);
+    grid.appendChild(input);
   }
 
-  if (isSubtraction) {
-    document.getElementById('tutor-msg').innerHTML = `Need to borrow? Write the new value in the top yellow box! ✂️`;
-  } else if (currentMode.startsWith('mult')) {
-    document.getElementById('tutor-msg').innerHTML = `Multiply from right to left! Carry any tens to the top yellow boxes! 🚀`;
-  } else {
-    document.getElementById('tutor-msg').innerHTML = `Start adding from the Ones column! Write any carried numbers in the top yellow boxes! 📦`;
-  }
-}
-
-function createCell(text, className = 'cell') {
-  const div = document.createElement('div');
-  div.className = className;
-  div.innerText = text;
-  return div;
+  document.getElementById('tutor-msg').textContent = isSubtraction
+    ? 'Subtract from right to left. If you borrow, write the new value in the yellow box.'
+    : currentMode.startsWith('mult')
+      ? 'Multiply from right to left. Write any carried tens in the yellow boxes.'
+      : 'Add from the Ones column. Write any carried numbers in the yellow boxes.';
 }
 
 function getExpectedExchanges() {
-  let expected = {};
-  if (isDivision) return expected;
-
+  const expected = {};
   if (currentMode.startsWith('add')) {
     let carry = 0;
     for (let p = 0; p < digitsCount; p++) {
-      let dA = Math.floor(numA / Math.pow(10, p)) % 10;
-      let dB = Math.floor(numB / Math.pow(10, p)) % 10;
-      let sum = dA + dB + carry;
-      carry = Math.floor(sum / 10);
-      expected[p + 1] = carry > 0 ? carry.toString() : "";
+      const a = Math.floor(numA / 10 ** p) % 10;
+      const b = Math.floor(numB / 10 ** p) % 10;
+      carry = Math.floor((a + b + carry) / 10);
+      expected[p + 1] = carry ? String(carry) : '';
     }
   } else if (currentMode.startsWith('mult')) {
     let carry = 0;
     for (let p = 0; p < digitsCount; p++) {
-      let dA = Math.floor(numA / Math.pow(10, p)) % 10;
-      let prod = dA * numB + carry;
-      carry = Math.floor(prod / 10);
-      expected[p + 1] = carry > 0 ? carry.toString() : "";
+      const a = Math.floor(numA / 10 ** p) % 10;
+      carry = Math.floor((a * numB + carry) / 10);
+      expected[p + 1] = carry ? String(carry) : '';
     }
   } else if (isSubtraction) {
-    let digitsA = [];
+    const digits = Array.from({ length: digitsCount }, (_, p) => Math.floor(numA / 10 ** p) % 10);
+    const modified = new Array(digitsCount).fill(false);
     for (let p = 0; p < digitsCount; p++) {
-      digitsA.push(Math.floor(numA / Math.pow(10, p)) % 10);
-    }
-    let modified = new Array(digitsCount).fill(false);
-    for (let p = 0; p < digitsCount; p++) {
-      let dB = Math.floor(numB / Math.pow(10, p)) % 10;
-      if (digitsA[p] < dB) {
-        let k = p + 1;
-        while (k < digitsCount && digitsA[k] === 0) k++;
-        if (k < digitsCount) {
-          digitsA[k] -= 1;
-          modified[k] = true;
-          for (let j = k - 1; j > p; j--) {
-            digitsA[j] = 9;
+      const bottom = Math.floor(numB / 10 ** p) % 10;
+      if (digits[p] < bottom) {
+        let source = p + 1;
+        while (source < digitsCount && digits[source] === 0) source++;
+        if (source < digitsCount) {
+          digits[source]--;
+          modified[source] = true;
+          for (let j = source - 1; j > p; j--) {
+            digits[j] = 9;
             modified[j] = true;
           }
-          digitsA[p] += 10;
+          digits[p] += 10;
           modified[p] = true;
         }
       }
     }
-    for (let p = 0; p < digitsCount; p++) {
-      expected[p] = modified[p] ? digitsA[p].toString() : "";
-    }
+    for (let p = 0; p < digitsCount; p++) expected[p] = modified[p] ? String(digits[p]) : '';
   }
   return expected;
 }
@@ -296,184 +234,70 @@ function getExpectedExchanges() {
 function checkAnswer() {
   if (isProcessing) return;
   isProcessing = true;
+  const checkButton = document.getElementById('btn-check-ans');
+  checkButton.disabled = true;
 
-  const checkBtn = document.getElementById('btn-check-ans');
-  checkBtn.disabled = true;
-
-  let expected;
-  if (isDivision) expected = numA / numB;
-  else if (isSubtraction) expected = numA - numB;
-  else if (currentMode.startsWith('mult')) expected = numA * numB;
-  else expected = numA + numB;
-
-  let userAnsStr = '';
-  let hasInput = false;
-  let emptyBoxes = [];
+  const expected = isDivision ? numA / numB : isSubtraction ? numA - numB : currentMode.startsWith('mult') ? numA * numB : numA + numB;
   const cols = isDivision ? digitsCount : digitsCount + 1;
-
-  if (isDivision) {
-    for (let i = 0; i < digitsCount; i++) {
-      const inputEl = document.getElementById(`ans-div-${i}`);
-      const val = inputEl.value.trim();
-      if (val !== '') hasInput = true;
-      else emptyBoxes.push(inputEl);
-      userAnsStr += val;
-    }
-  } else {
-    for (let i = cols - 1; i >= 0; i--) {
-      const inputEl = document.getElementById(`ans-${i}`);
-      const val = inputEl.value.trim();
-      if (val !== '') hasInput = true;
-      else emptyBoxes.push(inputEl);
-      userAnsStr += val;
-    }
-  }
-
+  const answerIds = isDivision
+    ? Array.from({ length: digitsCount }, (_, i) => `ans-div-${i}`)
+    : Array.from({ length: cols }, (_, i) => `ans-${cols - 1 - i}`);
+  const values = answerIds.map(id => document.getElementById(id));
+  const hasInput = values.some(input => input.value !== '');
   if (!hasInput) {
-    document.getElementById('tutor-msg').innerHTML = "Don't forget to type in your answer before checking! 🤔";
+    document.getElementById('tutor-msg').textContent = 'Enter your answer in the green boxes, then check it.';
+    values.forEach(input => input.classList.add('empty-error'));
     playSound('wrong');
-    emptyBoxes.forEach(box => {
-      box.classList.remove('empty-error');
-      void box.offsetWidth;
-      box.classList.add('empty-error');
-    });
     isProcessing = false;
-    checkBtn.disabled = false;
+    checkButton.disabled = false;
     return;
   }
 
-  let expectedExchanges = getExpectedExchanges();
+  const userAnswer = Number(values.map(input => input.value || '0').join(''));
   let exchangesCorrect = true;
-
   if (!isDivision) {
+    const expectedExchanges = getExpectedExchanges();
     for (let p = 0; p < digitsCount; p++) {
-      let carryElem = document.getElementById(`carry-${p}`);
-      if (carryElem) {
-        let userVal = carryElem.value.trim();
-        let expVal = expectedExchanges[p] || "";
-
-        if (expVal !== "") {
-          if (userVal === expVal) {
-            carryElem.classList.add('correct-input');
-            carryElem.classList.remove('wrong-input');
-          } else {
-            carryElem.classList.remove('wrong-input');
-            void carryElem.offsetWidth;
-            carryElem.classList.add('wrong-input');
-            carryElem.classList.remove('correct-input');
-            exchangesCorrect = false;
-          }
-        } else if (userVal !== "" && userVal !== "0") {
-          carryElem.classList.remove('wrong-input');
-          void carryElem.offsetWidth;
-          carryElem.classList.add('wrong-input');
-          carryElem.classList.remove('correct-input');
-          exchangesCorrect = false;
-        } else {
-          carryElem.classList.remove('wrong-input', 'correct-input');
-        }
+      const input = document.getElementById(`carry-${p}`);
+      const wanted = expectedExchanges[p] || '';
+      if (input && input.value !== wanted && !(wanted === '' && input.value === '0')) {
+        input.classList.add('wrong-input');
+        exchangesCorrect = false;
+      } else if (input && wanted !== '') {
+        input.classList.add('correct-input');
       }
     }
   }
 
-  const userAnsNum = parseInt(userAnsStr, 10);
-
-  if (userAnsNum === expected && exchangesCorrect) {
+  if (userAnswer === expected && exchangesCorrect) {
     playSound('correct');
     stats.stars += 5;
     stats.correct++;
     updateStatsUI();
-    addToHistory(`${currentProblemStr} = ${expected} ✅`, false);
-
-    document.getElementById('tutor-msg').innerText = "Super star work! Fantastic calculation! 🌟";
+    addToHistory(`${currentProblemStr} = ${expected} ✅`);
+    document.getElementById('tutor-msg').textContent = 'Great work! 🌟';
     setTimeout(() => {
-      isDivision ? generateDivisionProblem() : generateColumnProblem();
+      if (isDivision) generateDivisionProblem();
+      else generateColumnProblem();
       isProcessing = false;
-      checkBtn.disabled = false;
-    }, 1800);
+      checkButton.disabled = false;
+    }, 1200);
     return;
   }
 
   playSound('wrong');
-  stats.stars -= 1;
+  stats.stars--;
   stats.wrong++;
   consecutiveWrongs++;
   updateStatsUI();
-
-  let wrongPlaces = [];
-  let formattedUserAns = "";
-  let expStr = expected.toString();
-
-  if (isDivision) {
-    let paddedExp = expStr.padStart(digitsCount, ' ');
-    for (let i = 0; i < digitsCount; i++) {
-      let uInput = document.getElementById(`ans-div-${i}`);
-      let uVal = uInput.value.trim();
-      formattedUserAns += uVal === '' ? '_' : uVal;
-      let expChar = paddedExp[i];
-      let isZeroSpaceEquivalent = (expChar === ' ' && uVal === '0') || (expChar === '0' && uVal === '');
-
-      if (uVal !== expChar && !isZeroSpaceEquivalent) {
-        uInput.classList.remove('wrong-input');
-        void uInput.offsetWidth;
-        uInput.classList.add('wrong-input');
-        let placeIndex = digitsCount - 1 - i;
-        wrongPlaces.push(PLACE_NAMES[placeIndex] || `Col ${placeIndex + 1}`);
-      } else {
-        uInput.classList.remove('wrong-input');
-      }
-    }
-  } else {
-    let paddedExp = expStr.padStart(cols, ' ');
-    for (let i = cols - 1; i >= 0; i--) {
-      let uInput = document.getElementById(`ans-${i}`);
-      let uVal = uInput.value.trim();
-      formattedUserAns += uVal === '' ? '_' : uVal;
-      let expCharIndex = cols - 1 - i;
-      let expChar = paddedExp[expCharIndex];
-      let isZeroSpaceEquivalent = (expChar === ' ' && uVal === '0');
-
-      if (uVal !== expChar && !isZeroSpaceEquivalent) {
-        uInput.classList.remove('wrong-input');
-        void uInput.offsetWidth;
-        uInput.classList.add('wrong-input');
-        wrongPlaces.push(PLACE_NAMES[i] || `Col ${i + 1}`);
-      } else {
-        uInput.classList.remove('wrong-input');
-      }
-    }
-  }
-
-  formattedUserAns = formattedUserAns.replace(/^_+/, '');
-  if (formattedUserAns === '') formattedUserAns = '0';
-  addToHistory(`${currentProblemStr} = ${formattedUserAns} ❌`, true);
-
-  wrongPlaces = [...new Set(wrongPlaces)].reverse();
-
-  let hintText = `💡 <b>Hint:</b> Check the highlighted boxes!<br>`;
-  if (wrongPlaces.length > 0) {
-    hintText += `You have mistakes in the <b>${wrongPlaces.join(' and ')}</b> column(s).<br>`;
-  }
-  if (!exchangesCorrect) {
-    hintText += `Check your top yellow carry/exchange boxes too!<br>`;
-  }
-
-  if (consecutiveWrongs >= 3) {
-    if (currentMode.startsWith('add')) hintText += "Make sure you add any 1s you carried over to the top!";
-    if (isSubtraction) hintText += "If the top number is smaller, write the new value in the top yellow box!";
-    if (currentMode.startsWith('mult')) hintText += "Multiply the bottom number by the top digit, and add your carried tens!";
-    if (isDivision) hintText += "Check your remainders as you divide left to right!";
-  } else {
-    hintText += "Try fixing those specific boxes! You can do it! 💪";
-  }
-
-  document.getElementById('tutor-msg').innerHTML = hintText;
-
+  addToHistory(`${currentProblemStr} = ${userAnswer} ❌`, true);
+  document.getElementById('tutor-msg').textContent = `Not quite—check the answer and yellow carry boxes. The answer is ${expected}.`;
+  values.forEach(input => input.classList.add('wrong-input'));
   setTimeout(() => {
     isProcessing = false;
-    checkBtn.disabled = false;
+    checkButton.disabled = false;
   }, 400);
 }
 
-// Initialize default mode
+// Generate the first question after the deferred script runs.
 setMode('add2');
