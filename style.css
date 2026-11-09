@@ -165,6 +165,17 @@ h1 {
 .btn-blue { background-color: var(--division); color: white; }
 .btn-check { width: 100%; margin-top: 15px; font-size: 1.3rem; padding: 12px; background-color: var(--correct); color: #006;}
 
+.maths-test-button {
+  background: linear-gradient(90deg, #ff3b30, #ffd600);
+  color: #000;
+  font-size: 1.1rem;
+  padding: 10px 24px;
+}
+
+.maths-test-button:hover {
+  background: linear-gradient(90deg, #e62e25, #f0c400);
+}
+
 /* Maths Grid */
 .grid-container {
   display: grid;
