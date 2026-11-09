@@ -166,14 +166,15 @@ h1 {
 .btn-check { width: 100%; margin-top: 15px; font-size: 0.975rem; padding: 9px; background-color: var(--correct); color: #006;}
 
 .maths-test-button {
-  background: linear-gradient(90deg, #00008B, #301934);
-  color: #000;
+  background: linear-gradient(90deg, #071A52, #3B0764);
+  color: #FFFFFF;
+  font-family: 'Trebuchet MS', 'Arial Black', sans-serif;
   font-size: 0.825rem;
   padding: 7.5px 18px;
 }
 
 .maths-test-button:hover {
-  background: linear-gradient(90deg, #e62e25, #f0c400);
+  background: linear-gradient(90deg, #041238, #2A0448);
 }
 
 /* Maths Grid */
