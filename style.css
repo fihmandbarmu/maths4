@@ -166,7 +166,7 @@ h1 {
 .btn-check { width: 100%; margin-top: 15px; font-size: 0.975rem; padding: 9px; background-color: var(--correct); color: #006;}
 
 .maths-test-button {
-  background: linear-gradient(90deg, #ff3b30, #ffd600);
+  background: linear-gradient(90deg, #00008B, #301934);
   color: #000;
   font-size: 0.825rem;
   padding: 7.5px 18px;
