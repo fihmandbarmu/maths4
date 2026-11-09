@@ -62,7 +62,7 @@ function createCell(text = '', className = 'cell') {
 }
 
 function getCorrectPoints() {
-  return digitsCount <= 6 ? 10 : digitsCount <= 11 ? 15 : 20;
+  return digitsCount <= 6 ? 10 : digitsCount <= 8 ? 12 : 16;
 }
 
 // The first incorrect attempt is free. Other operations increase the
@@ -160,7 +160,7 @@ function generateColumnProblem() {
   const cols = digitsCount + 1;
   grid.style.gridTemplateColumns = `repeat(${cols}, 65px)`;
 
-  const labels = ['Tn', 'Hn', 'Tb', 'Bn', 'Hm', 'Tm', 'M', 'HTh', 'TTh', 'Th', 'H', 'T', 'O'];
+  const labels = ['Tn', 'Hn', 'Tb', 'Bn', 'Hm', 'Tm', 'M', 'HT', 'Th', 'T', 'H', 'T', 'O'];
   labels.slice(labels.length - cols).forEach(label => grid.appendChild(createCell(label, 'place-header')));
 
   grid.appendChild(createCell(''));
