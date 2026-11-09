@@ -132,7 +132,7 @@ function generateDivisionProblem() {
       grid.appendChild(work);
     }
   }
-  document.getElementById('tutor-msg').textContent = 'Divide from left to right. Enter the quotient in the green boxes.';
+  document.getElementById('tutor-msg').textContent = 'Let’s pounce on this division problem! Enter the quotient in the green boxes.';
 }
 
 function generateColumnProblem() {
@@ -197,10 +197,10 @@ function generateColumnProblem() {
   }
 
   document.getElementById('tutor-msg').textContent = isSubtraction
-    ? 'Subtract from right to left. If you borrow, write the new value in the yellow box.'
+    ? 'Subtract from right to left, little kitten. If you borrow, write the new value in the yellow box.'
     : currentMode.startsWith('mult')
-      ? 'Multiply from right to left. Write any carried tens in the yellow boxes.'
-      : 'Add from the Ones column. Write any carried numbers in the yellow boxes.';
+      ? 'Multiply from right to left. Write any carried tens in the yellow boxes, meow!'
+      : 'Start adding from the Ones column. Write any carried numbers in the yellow boxes, meow!';
 }
 
 function getExpectedExchanges() {
@@ -259,7 +259,7 @@ function checkAnswer() {
   const values = answerIds.map(id => document.getElementById(id));
   const hasInput = values.some(input => input.value !== '');
   if (!hasInput) {
-    document.getElementById('tutor-msg').textContent = 'Enter your answer in the green boxes, then check it.';
+    document.getElementById('tutor-msg').textContent = 'Meow? Put your answer in the green boxes first, then check it!';
     values.forEach(input => input.classList.add('empty-error'));
     playSound('wrong');
     isProcessing = false;
@@ -289,7 +289,7 @@ function checkAnswer() {
     stats.correct++;
     updateStatsUI();
     addToHistory(`${currentProblemStr} = ${expected} ✅`);
-    document.getElementById('tutor-msg').textContent = 'Great work! 🌟';
+    document.getElementById('tutor-msg').textContent = 'Purrfect work! You got it! 🌟🐾';
     setTimeout(() => {
       if (isDivision) generateDivisionProblem();
       else generateColumnProblem();
@@ -305,7 +305,8 @@ function checkAnswer() {
   stats.wrong++;
   updateStatsUI();
   addToHistory(`${currentProblemStr} = ${userAnswer} ❌`, true);
-  document.getElementById('tutor-msg').textContent = `Not quite—check the answer and yellow carry boxes. The answer is ${expected}.`;
+  // Give encouragement without revealing the correct answer.
+  document.getElementById('tutor-msg').textContent = 'Not quite, little kitten. Give it another try and check your carries! Meow 🐾';
   values.forEach(input => input.classList.add('wrong-input'));
   setTimeout(() => {
     isProcessing = false;
