@@ -1,7 +1,7 @@
 // The new practice mode opens on 1st December 2026 (local time).
 const DECIMAL_FRACTION_RELEASE = new Date(2026, 12, 1, 6, 2, 0, 0);
 const WEIGHT_MATHS_RELEASE = new Date(2026, 11, 5, 0, 0, 0, 0);
-const MEASURING_RELEASE = new Date(2026, 0, 2, 0, 0, 0, 0);
+const MEASURING_RELEASE = new Date(2026, 0, 8, 0, 0, 0, 0);
 const ROUNDING_RELEASE = new Date(2026, 11, 15, 0, 0, 0, 0);
 const ALLOWED_DIVISORS = [2, 5, 10, 20, 25, 100, 1000, 10000];
 let decimalFractionFormat = 'decimal';
@@ -481,8 +481,8 @@ function addScheduledPracticeTabs() {
   document.head.append(style);
 
   const tabs = [
-    { id: 'measuring-button', name: 'Measuring', release: MEASURING_RELEASE, gameId: 'measuring-game', bodyClass: 'measuring-game-open', label: '2nd January 2026', generate: generateMeasuringProblem, input: 'measuring-game-answer', color: 'measuring' },
-    { id: 'rounding-button', name: 'Rounding', release: ROUNDING_RELEASE, gameId: 'rounding-game', bodyClass: 'rounding-game-open', label: '15th December 2026', generate: generateRoundingProblem, input: 'rounding-game-answer', color: 'rounding' }
+    { id: 'measuring-button', name: 'Measuring', release: MEASURING_RELEASE, gameId: 'measuring-game', bodyClass: 'measuring-game-open', label: '8th January 2026', generate: generateMeasuringProblem, input: 'measuring-game-answer' },
+    { id: 'rounding-button', name: 'Rounding', release: ROUNDING_RELEASE, gameId: 'rounding-game', bodyClass: 'rounding-game-open', label: '15th December 2026', generate: generateRoundingProblem, input: 'rounding-game-answer' }
   ];
   tabs.forEach(tab => {
     const button = document.createElement('button');
