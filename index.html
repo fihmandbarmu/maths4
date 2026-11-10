@@ -6,12 +6,13 @@
   <title> Meowadd </title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="feature.css">
   <script src="script.js" defer></script>
+  <script src="feature.js" defer></script>
 </head>
 <body>
 
   <h1> Meowadd!🐱</h1>
-  
 
   <div class="main-wrapper">
     <div class="side-panel stats-panel">
@@ -33,6 +34,7 @@
     <div class="container">
       <div class="nav-buttons">
         <button class="btn maths-test-button" type="button" onclick="alert('Comming soon')">Maths Test</button>
+        <button id="decimal-fractions-button" class="btn decimal-fractions-button" type="button" onclick="openDecimalFractionGame()">Decimals & Fractions</button>
       </div>
       <div class="nav-buttons">
         <button class="btn btn-red" onclick="setMode('add2')">+ 2-Digit</button>
@@ -100,6 +102,29 @@
         <div id="column-grid" class="grid-container"></div>
         <button id="btn-check-ans" class="btn btn-check" onclick="checkAnswer()">Final Answer! ✅</button>
       </div>
+
+      <section id="decimal-fraction-game" class="decimal-game" aria-labelledby="decimal-game-title" hidden>
+        <button class="btn game-back-button" type="button" onclick="closeDecimalFractionGame()">← Back to maths</button>
+        <h2 id="decimal-game-title">Decimals & Fractions</h2>
+        <p class="game-rules">Choose decimals or fractions and an operation. Correct answers earn <strong>5 points</strong>; incorrect answers lose <strong>2 points</strong>. Division questions only use 2, 5, 10, 20, 25, 100, 1,000 or 10,000 as the divisor.</p>
+        <div class="game-controls" aria-label="Choose number format">
+          <button class="btn format-button selected" type="button" data-format="decimal" onclick="setDecimalFractionFormat('decimal')">Decimals</button>
+          <button class="btn format-button" type="button" data-format="fraction" onclick="setDecimalFractionFormat('fraction')">Fractions</button>
+        </div>
+        <div class="game-controls" aria-label="Choose operation">
+          <button class="btn operation-button selected" type="button" data-operation="add" onclick="setDecimalFractionOperation('add')">+</button>
+          <button class="btn operation-button" type="button" data-operation="subtract" onclick="setDecimalFractionOperation('subtract')">−</button>
+          <button class="btn operation-button" type="button" data-operation="multiply" onclick="setDecimalFractionOperation('multiply')">×</button>
+          <button class="btn operation-button" type="button" data-operation="divide" onclick="setDecimalFractionOperation('divide')">÷</button>
+        </div>
+        <div id="decimal-game-question" class="decimal-game-question" aria-live="polite"></div>
+        <form id="decimal-game-form" class="decimal-answer-form">
+          <label for="decimal-game-answer">Your answer (a fraction like 3/4 or a decimal):</label>
+          <input id="decimal-game-answer" type="text" inputmode="decimal" autocomplete="off" placeholder="Answer" aria-describedby="decimal-game-feedback">
+          <button class="btn decimal-submit-button" type="submit">Check answer</button>
+        </form>
+        <p id="decimal-game-feedback" class="decimal-game-feedback" aria-live="polite"></p>
+      </section>
 
       <div class="tutor-box">
         <div class="tutor-avatar">🐱</div>
