@@ -1,5 +1,5 @@
-#decimal-fractions-button {
-  background: linear-gradient(110deg, #35c759 0%, #1685e8 100%);
+#decimal-fractions-button,
+#weight-maths-button {
   color: #fff;
   border-color: #123;
   font-size: 0.85rem;
@@ -7,28 +7,47 @@
   max-width: 100%;
 }
 
+#decimal-fractions-button {
+  background: linear-gradient(110deg, #35c759 0%, #1685e8 100%);
+}
+
+#weight-maths-button {
+  background: linear-gradient(110deg, #f6a623 0%, #e34b73 100%);
+}
+
 #decimal-fractions-button:hover,
 .decimal-submit-button:hover {
   background: linear-gradient(110deg, #25a947 0%, #086bc7 100%);
 }
 
+#weight-maths-button:hover,
+.weight-submit-button:hover {
+  background: linear-gradient(110deg, #dc8c0d 0%, #c83259 100%);
+}
+
 .decimal-game-open .container > .nav-buttons,
 .decimal-game-open #column-ui,
-.decimal-game-open .tutor-box {
+.decimal-game-open .tutor-box,
+.weight-game-open .container > .nav-buttons,
+.weight-game-open #column-ui,
+.weight-game-open .tutor-box {
   display: none !important;
 }
 
-.decimal-game[hidden] {
+.decimal-game[hidden],
+.weight-game[hidden] {
   display: none;
 }
 
-.decimal-game {
+.decimal-game,
+.weight-game {
   width: 100%;
   text-align: center;
   padding: 8px 0;
 }
 
-.decimal-game h2 {
+.decimal-game h2,
+.weight-game h2 {
   margin: 14px 0 8px;
 }
 
@@ -46,29 +65,34 @@
 
 .format-button,
 .operation-button,
+.weight-operation-button,
 .game-back-button {
   background: #e8f4ff;
 }
 
-.operation-button {
+.operation-button,
+.weight-operation-button {
   min-width: 52px;
   font-size: 1.2rem;
 }
 
 .format-button.selected,
-.operation-button.selected {
+.operation-button.selected,
+.weight-operation-button.selected {
   background: #b7f0c5;
   outline: 3px solid #228b45;
 }
 
-.decimal-game-question {
+.decimal-game-question,
+.weight-game-question {
   margin: 22px 0;
   font-size: clamp(1.7rem, 6vw, 2.5rem);
   font-weight: bold;
   overflow-wrap: anywhere;
 }
 
-.decimal-answer-form {
+.decimal-answer-form,
+.weight-answer-form {
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -78,11 +102,13 @@
   text-align: left;
 }
 
-.decimal-answer-form label {
+.decimal-answer-form label,
+.weight-answer-form label {
   font-weight: bold;
 }
 
-#decimal-game-answer {
+#decimal-game-answer,
+#weight-game-answer {
   min-height: 48px;
   border: 3px solid #222;
   border-radius: 9px;
@@ -90,27 +116,39 @@
   font-size: 1.2rem;
 }
 
-.decimal-submit-button {
-  background: linear-gradient(110deg, #35c759 0%, #1685e8 100%);
+.decimal-submit-button,
+.weight-submit-button {
   color: white;
   padding: 10px;
 }
 
-.decimal-game-feedback {
+.decimal-submit-button {
+  background: linear-gradient(110deg, #35c759 0%, #1685e8 100%);
+}
+
+.weight-submit-button {
+  background: linear-gradient(110deg, #f6a623 0%, #e34b73 100%);
+}
+
+.decimal-game-feedback,
+.weight-game-feedback {
   min-height: 1.5em;
   font-weight: bold;
 }
 
-.decimal-game-feedback.correct {
+.decimal-game-feedback.correct,
+.weight-game-feedback.correct {
   color: #16752d;
 }
 
-.decimal-game-feedback.incorrect {
+.decimal-game-feedback.incorrect,
+.weight-game-feedback.incorrect {
   color: #c62828;
 }
 
 @media (max-width: 600px) {
-  #decimal-fractions-button {
+  #decimal-fractions-button,
+  #weight-maths-button {
     line-height: 1.4;
   }
 }
