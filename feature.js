@@ -1,5 +1,5 @@
-// The new practice mode opens on November 21, 2026 (local time).
-const DECIMAL_FRACTION_RELEASE = new Date(2026, 10, 21, 0, 0, 0, 0);
+// The new practice mode opens on December 1, 2026 (local time).
+const DECIMAL_FRACTION_RELEASE = new Date(2026, 11, 1, 0, 0, 0, 0);
 const ALLOWED_DIVISORS = [2, 5, 10, 20, 25, 100, 1000, 10000];
 let decimalFractionFormat = 'decimal';
 let decimalFractionOperation = 'add';
@@ -58,7 +58,7 @@ function refreshDecimalFractionButton() {
 function openDecimalFractionGame() {
   const countdown = getReleaseCountdown();
   if (countdown) {
-    alert(`Coming in ${formatReleaseCountdown(countdown)}. Available November 21, 2026.`);
+    alert(`Coming in ${formatReleaseCountdown(countdown)}. Available December 1, 2026.`);
     return;
   }
   document.body.classList.add('decimal-game-open');
