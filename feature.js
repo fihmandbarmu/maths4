@@ -1,5 +1,5 @@
 // The new practice mode opens on 1st December 2026 (local time).
-const DECIMAL_FRACTION_RELEASE = new Date(2026, 11, 1, 0, 0, 0, 0);
+const DECIMAL_FRACTION_RELEASE = new Date(2026, 12, 1, 6, 2, 0, 0);
 const ALLOWED_DIVISORS = [2, 5, 10, 20, 25, 100, 1000, 10000];
 let decimalFractionFormat = 'decimal';
 let decimalFractionOperation = 'add';
