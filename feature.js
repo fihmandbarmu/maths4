@@ -1,6 +1,7 @@
 // Practice modes release at local midnight on their scheduled dates.
 const DECIMAL_FRACTION_RELEASE = new Date(2026, 11, 1, 0, 0, 0, 0);
 const MATHS_PROBLEM_RELEASE = new Date(2026, 11, 4, 0, 0, 0, 0);
+const TIME_PRACTICE_RELEASE = new Date(2026, 10, 14, 0, 0, 0, 0);
 const WEIGHT_MATHS_RELEASE = new Date(2026, 11, 5, 0, 0, 0, 0);
 const MEASURING_RELEASE = new Date(2026, 11, 10, 0, 0, 0, 0);
 const ROUNDING_RELEASE = new Date(2026, 11, 15, 0, 0, 0, 0);
@@ -217,8 +218,8 @@ function openPractice(gameId, className, release, label, generate, inputId) {
     alert(`Coming in ${formatReleaseCountdown(countdown)}. Available ${label}.`);
     return;
   }
-  document.body.classList.remove('decimal-game-open', 'maths-problem-game-open', 'weight-game-open', 'measuring-game-open', 'rounding-game-open');
-  ['decimal-fraction-game', 'maths-problem-game', 'weight-maths-game', 'measuring-game', 'rounding-game'].forEach(id => {
+  document.body.classList.remove('decimal-game-open', 'maths-problem-game-open', 'time-practice-open', 'weight-game-open', 'measuring-game-open', 'rounding-game-open');
+  ['decimal-fraction-game', 'maths-problem-game', 'time-practice-panel', 'weight-maths-game', 'measuring-game', 'rounding-game'].forEach(id => {
     const section = document.getElementById(id);
     if (section) section.hidden = true;
   });
@@ -296,10 +297,12 @@ function setupPracticeModes() {
   commonStyle.textContent = `
     .practice-tab { color:#fff; border-color:#123; font-size:.85rem; padding:9px 14px; max-width:100%; background:linear-gradient(110deg,#00a6a6,#2563eb); }
     #maths-problem-button { background:linear-gradient(110deg,#f59e0b,#ef4444); }
+    #time-practice-button { background:linear-gradient(110deg,#0f766e,#06b6d4); }
     #weight-maths-button { background:linear-gradient(110deg,#f6a623,#e34b73); }
     #rounding-button { background:linear-gradient(110deg,#8b5cf6,#d946ef); }
     .decimal-game-open .container > .nav-buttons,.decimal-game-open #column-ui,.decimal-game-open .tutor-box,
     .maths-problem-game-open .container > .nav-buttons,.maths-problem-game-open #column-ui,.maths-problem-game-open .tutor-box,
+    .time-practice-open .container > .nav-buttons,.time-practice-open #column-ui,.time-practice-open .tutor-box,
     .weight-game-open .container > .nav-buttons,.weight-game-open #column-ui,.weight-game-open .tutor-box,
     .measuring-game-open .container > .nav-buttons,.measuring-game-open #column-ui,.measuring-game-open .tutor-box,
     .rounding-game-open .container > .nav-buttons,.rounding-game-open #column-ui,.rounding-game-open .tutor-box { display:none !important; }
