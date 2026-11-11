@@ -1,5 +1,6 @@
 // Practice modes release at local midnight on their scheduled dates.
 const DECIMAL_FRACTION_RELEASE = new Date(2026, 11, 1, 0, 0, 0, 0);
+const MATHS_PROBLEM_RELEASE = new Date(2026, 11, 4, 0, 0, 0, 0);
 const WEIGHT_MATHS_RELEASE = new Date(2026, 11, 5, 0, 0, 0, 0);
 const MEASURING_RELEASE = new Date(2026, 11, 10, 0, 0, 0, 0);
 const ROUNDING_RELEASE = new Date(2026, 11, 15, 0, 0, 0, 0);
@@ -14,6 +15,8 @@ let weightAnswerUnit = 'mg';
 let weightBusy = false;
 let measuringExpected = 0;
 let measuringBusy = false;
+let mathsProblemExpected = 0;
+let mathsProblemBusy = false;
 let roundingExpected = 0;
 let roundingBusy = false;
 let roundingPlace = 10;
@@ -153,6 +156,24 @@ function generateMeasuringProblem() {
   feedback.className = 'practice-feedback';
 }
 
+function generateMathsProblem() {
+  const operations = [
+    { symbol: '+', calculate: (a, b) => a + b },
+    { symbol: '−', calculate: (a, b) => a - b },
+    { symbol: '×', calculate: (a, b) => a * b }
+  ];
+  const operation = operations[Math.floor(Math.random() * operations.length)];
+  let first = Math.floor(Math.random() * 20) + 2;
+  let second = Math.floor(Math.random() * 20) + 2;
+  if (operation.symbol === '−' && first < second) [first, second] = [second, first];
+  mathsProblemExpected = operation.calculate(first, second);
+  document.getElementById('maths-problem-question').textContent = `${first} ${operation.symbol} ${second} = ?`;
+  document.getElementById('maths-problem-answer').value = '';
+  const feedback = document.getElementById('maths-problem-feedback');
+  feedback.textContent = '';
+  feedback.className = 'practice-feedback';
+}
+
 function generateRoundingProblem() {
   const amount = Math.floor(Math.random() * 99999) + 1;
   roundingExpected = Math.round(amount / roundingPlace) * roundingPlace;
@@ -196,8 +217,8 @@ function openPractice(gameId, className, release, label, generate, inputId) {
     alert(`Coming in ${formatReleaseCountdown(countdown)}. Available ${label}.`);
     return;
   }
-  document.body.classList.remove('decimal-game-open', 'weight-game-open', 'measuring-game-open', 'rounding-game-open');
-  ['decimal-fraction-game', 'weight-maths-game', 'measuring-game', 'rounding-game'].forEach(id => {
+  document.body.classList.remove('decimal-game-open', 'maths-problem-game-open', 'weight-game-open', 'measuring-game-open', 'rounding-game-open');
+  ['decimal-fraction-game', 'maths-problem-game', 'weight-maths-game', 'measuring-game', 'rounding-game'].forEach(id => {
     const section = document.getElementById(id);
     if (section) section.hidden = true;
   });
@@ -274,9 +295,11 @@ function setupPracticeModes() {
   const commonStyle = document.createElement('style');
   commonStyle.textContent = `
     .practice-tab { color:#fff; border-color:#123; font-size:.85rem; padding:9px 14px; max-width:100%; background:linear-gradient(110deg,#00a6a6,#2563eb); }
+    #maths-problem-button { background:linear-gradient(110deg,#f59e0b,#ef4444); }
     #weight-maths-button { background:linear-gradient(110deg,#f6a623,#e34b73); }
     #rounding-button { background:linear-gradient(110deg,#8b5cf6,#d946ef); }
     .decimal-game-open .container > .nav-buttons,.decimal-game-open #column-ui,.decimal-game-open .tutor-box,
+    .maths-problem-game-open .container > .nav-buttons,.maths-problem-game-open #column-ui,.maths-problem-game-open .tutor-box,
     .weight-game-open .container > .nav-buttons,.weight-game-open #column-ui,.weight-game-open .tutor-box,
     .measuring-game-open .container > .nav-buttons,.measuring-game-open #column-ui,.measuring-game-open .tutor-box,
     .rounding-game-open .container > .nav-buttons,.rounding-game-open #column-ui,.rounding-game-open .tutor-box { display:none !important; }
@@ -297,6 +320,14 @@ function setupPracticeModes() {
     @media(max-width:600px){.practice-tab{line-height:1.4;}}
   `;
   document.head.append(commonStyle);
+
+  addPracticeTab({
+    id: 'maths-problem-button', title: 'Maths Problem', release: MATHS_PROBLEM_RELEASE, releaseLabel: '4th December 2026',
+    gameId: 'maths-problem-game', className: 'maths-problem-game-open', questionId: 'maths-problem-question', answerId: 'maths-problem-answer', feedbackId: 'maths-problem-feedback',
+    content: '<p class="game-rules">Solve a quick arithmetic challenge. Correct answers earn <strong>5 points</strong>; incorrect answers lose <strong>2 points</strong>.</p>',
+    generate: generateMathsProblem,
+    submit: event => { event.preventDefault(); const question = document.getElementById('maths-problem-question').textContent.replace(' = ?', ' ='); recordPracticeAnswer({ answer: document.getElementById('maths-problem-answer'), expected: mathsProblemExpected, question, feedback: document.getElementById('maths-problem-feedback'), busy: value => { if (value) mathsProblemBusy = true; return mathsProblemBusy; }, onNext: () => { mathsProblemBusy = false; generateMathsProblem(); }, tolerance: 1e-9 }); }
+  });
 
   const weightSection = addPracticeTab({
     id: 'weight-maths-button', title: 'Weight Maths', release: WEIGHT_MATHS_RELEASE, releaseLabel: '5th December 2026',
@@ -326,7 +357,7 @@ function setupPracticeModes() {
     content: `<p class="game-rules">Round numbers to the nearest 10, 100, or 1,000. Correct answers earn <strong>5 points</strong>; incorrect answers lose <strong>2 points</strong>.</p>
       <div class="game-controls"><button class="btn rounding-place-button selected" type="button" data-place="10">Nearest 10</button><button class="btn rounding-place-button" type="button" data-place="100">Nearest 100</button><button class="btn rounding-place-button" type="button" data-place="1000">Nearest 1,000</button></div>`,
     generate: generateRoundingProblem,
-    submit: event => { event.preventDefault(); const question = document.getElementById('rounding-game-question').textContent; recordPracticeAnswer({ answer: document.getElementById('rounding-game-answer'), expected: roundingExpected, question, feedback: document.getElementById('rounding-game-feedback'), busy: value => { if (value) roundingBusy = true; return roundingBusy; }, onNext: () => { roundingBusy = false; generateRoundingProblem(); } }); }
+    submit: event => { event.preventDefault(); const question = document.getElementById('rounding-game-question').textContent; recordPracticeAnswer({ answer: document.getElementById('rounding-game-answer'), expected: roundingExpected, question, feedback: document.getElementById('rounding-game-feedback'), busy: value => { if (value) roundingBusy = true; return roundingBusy; }, onNext: () => { roundingBusy = false; generateRoundingProblem(); }, tolerance: 1e-9 }); }
   });
   roundingSection.querySelectorAll('.rounding-place-button').forEach(button => button.addEventListener('click', () => {
     roundingPlace = Number(button.dataset.place);
@@ -337,8 +368,10 @@ function setupPracticeModes() {
 
 setupPracticeModes();
 refreshReleaseButton('decimal-fractions-button', DECIMAL_FRACTION_RELEASE, 'Decimals & Fractions');
+refreshReleaseButton('maths-problem-button', MATHS_PROBLEM_RELEASE, 'Maths Problem');
 window.setInterval(() => {
   refreshReleaseButton('decimal-fractions-button', DECIMAL_FRACTION_RELEASE, 'Decimals & Fractions');
+  refreshReleaseButton('maths-problem-button', MATHS_PROBLEM_RELEASE, 'Maths Problem');
   refreshReleaseButton('weight-maths-button', WEIGHT_MATHS_RELEASE, 'Weight Maths');
   refreshReleaseButton('measuring-button', MEASURING_RELEASE, 'Measuring');
   refreshReleaseButton('rounding-button', ROUNDING_RELEASE, 'Rounding');
