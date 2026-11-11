@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="feature.css">
   <script src="script.js" defer></script>
   <script src="feature.js" defer></script>
+  <script src="time.js" defer></script>
 </head>
 <body>
 
@@ -106,7 +107,7 @@
       <section id="decimal-fraction-game" class="decimal-game" aria-labelledby="decimal-game-title" hidden>
         <button class="btn game-back-button" type="button" onclick="closeDecimalFractionGame()">← Back to maths</button>
         <h2 id="decimal-game-title">Decimals & Fractions</h2>
-        <p class="game-rules">Choose decimals or fractions and an operation. Correct answers earn <strong>5 points</strong>; incorrect answers lose <strong>2 points</strong>. Division questions only use 2, 5, 10, 20, 25, 100, 1,000 or 10,000 as the divisor.</p>
+        <p class="game-rules">Choose decimals or fractions and an operation. Correct answers earn <strong>5 points</strong>; incorrect answers lose <strong>2 points</strong>. Division questions only use allowed divisors.</p>
         <div class="game-controls" aria-label="Choose number format">
           <button class="btn format-button selected" type="button" data-format="decimal" onclick="setDecimalFractionFormat('decimal')">Decimals</button>
           <button class="btn format-button" type="button" data-format="fraction" onclick="setDecimalFractionFormat('fraction')">Fractions</button>
