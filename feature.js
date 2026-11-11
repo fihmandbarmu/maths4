@@ -2,7 +2,7 @@
 const DECIMAL_FRACTION_RELEASE = new Date(2026, 11, 1, 0, 0, 0, 0);
 const MATHS_PROBLEM_RELEASE = new Date(2026, 11, 4, 0, 0, 0, 0);
 const TIME_PRACTICE_RELEASE = new Date(2026, 10, 14, 0, 0, 0, 0);
-const WEIGHT_MATHS_RELEASE = new Date(2026, 11, 5, 0, 0, 0, 0);
+const WEIGHT_MATHS_RELEASE = new Date(2027, 01, 5, 0, 0, 0, 0);
 const MEASURING_RELEASE = new Date(2027, 01, 10, 0, 0, 0, 0);
 const ROUNDING_RELEASE = new Date(2027, 07, 30, 0, 0, 0, 0);
 const ALLOWED_DIVISORS = [2, 5, 10, 20, 25, 100, 1000, 10000];
