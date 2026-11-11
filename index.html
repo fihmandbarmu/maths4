@@ -9,7 +9,6 @@
   <link rel="stylesheet" href="feature.css">
   <script src="script.js" defer></script>
   <script src="feature.js" defer></script>
-  <script src="time.js" defer></script>
 </head>
 <body>
 
@@ -36,16 +35,6 @@
       <div class="nav-buttons">
         <button class="btn maths-test-button" type="button" onclick="alert('Comming soon')">Maths Test</button>
         <button id="decimal-fractions-button" class="btn decimal-fractions-button" type="button" onclick="openDecimalFractionGame()">Decimals & Fractions</button>
-      </div>
-      <div class="place-value-picker">
-        <label for="place-value-level">Long maths place-value level:</label>
-        <select id="place-value-level" class="btn" aria-label="Choose the place-value level for long maths" onchange="setMode(currentMode.replace(/\\d+$/, this.value))">
-          <option value="3">Up to 100s (999)</option>
-          <option value="4">Up to 1,000s (9,999)</option>
-          <option value="5">Up to 10,000s (99,999)</option>
-          <option value="7">Up to 1,000,000s (9,999,999)</option>
-        </select>
-        <span>Choose a level, then use the +, −, ×, or ÷ long-maths buttons below.</span>
       </div>
       <div class="nav-buttons">
         <button class="btn btn-red" onclick="setMode('add2')">+ 2-Digit</button>
