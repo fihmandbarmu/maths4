@@ -9,9 +9,91 @@ let stats = { stars: 0, correct: 0, wrong: 0 };
 let consecutiveWrongs = 0;
 let currentProblemStr = '';
 
+const APP_SHARE_URL = 'https://fihmandbarmu.github.io/maths4/';
+const APP_SHARE_TEXT = 'Try Meowadd!🐱 and have fun with maths practice.';
+
 const PLACE_NAMES = ['Ones', 'Tens', 'Hundreds', 'Thousands', 'Ten-thousands', 'Hundred-thousands', 'Millions', 'Ten-millions', 'Hundred-millions', 'Billions', 'Ten-billions', 'Hundred-billions', 'Trillions'];
 const AudioContextClass = window.AudioContext || window.webkitAudioContext;
 const audioCtx = AudioContextClass ? new AudioContextClass() : null;
+
+function openShareModal() {
+  const modal = document.getElementById('share-modal');
+  if (!modal) return;
+  modal.classList.remove('hidden');
+  modal.setAttribute('aria-hidden', 'false');
+}
+
+function closeShareModal() {
+  const modal = document.getElementById('share-modal');
+  if (!modal) return;
+  modal.classList.add('hidden');
+  modal.setAttribute('aria-hidden', 'true');
+}
+
+function shareAppVia(type) {
+  const shareUrl = APP_SHARE_URL;
+  const shareText = `${APP_SHARE_TEXT} ${shareUrl}`;
+  const encoded = encodeURIComponent(shareText);
+
+  if (type === 'gmail') {
+    window.open(`https://mail.google.com/mail/?view=cm&fs=1&su=${encodeURIComponent('Meowadd!🐱')} &body=${encoded}`, '_blank', 'noopener,noreferrer');
+    closeShareModal();
+    return;
+  }
+
+  if (type === 'whatsapp') {
+    window.open(`https://wa.me/?text=${encoded}`, '_blank', 'noopener,noreferrer');
+    closeShareModal();
+    return;
+  }
+
+  if (navigator.share) {
+    navigator.share({
+      title: 'Meowadd!🐱',
+      text: APP_SHARE_TEXT,
+      url: shareUrl
+    }).catch(() => {});
+    closeShareModal();
+    return;
+  }
+
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(shareText).then(() => {
+      alert('App link copied to your clipboard.');
+    }).catch(() => {
+      window.prompt('Copy this link:', shareText);
+    });
+    closeShareModal();
+    return;
+  }
+
+  window.prompt('Copy this link:', shareText);
+  closeShareModal();
+}
+
+function setupShareButton() {
+  const shareButton = document.getElementById('share-button');
+  const modal = document.getElementById('share-modal');
+  const closeButton = document.getElementById('close-share-modal');
+
+  if (shareButton) {
+    shareButton.addEventListener('click', openShareModal);
+  }
+
+  if (closeButton) {
+    closeButton.addEventListener('click', closeShareModal);
+  }
+
+  if (modal) {
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) closeShareModal();
+    });
+  }
+
+  document.querySelectorAll('.share-option').forEach(button => {
+    button.addEventListener('click', () => shareAppVia(button.dataset.share));
+  });
+}
 
 function playSound(type) {
   if (!audioCtx) return;
@@ -314,5 +396,184 @@ function checkAnswer() {
   }, 400);
 }
 
+setupShareButton();
+
 // Generate the first question after the deferred script runs.
 setMode('add2');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
