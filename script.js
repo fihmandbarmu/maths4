@@ -132,7 +132,7 @@ function generateDivisionProblem() {
       grid.appendChild(work);
     }
   }
-  document.getElementById('tutor-msg').textContent = 'Let’s pounce on this division problem! Enter the quotient in the green boxes.';
+  document.getElementById('tutor-msg').textContent = 'Some cats has been lost. Let’s pounce on this division problem so that we will find more cats! ';
 }
 
 function generateColumnProblem() {
@@ -197,10 +197,10 @@ function generateColumnProblem() {
   }
 
   document.getElementById('tutor-msg').textContent = isSubtraction
-    ? 'Subtract from right to left, little kitten. If you borrow, write the new value in the yellow box.'
+    ? 'Subtract from right to left, little kitten. If you borrow, write the new value in the yellow box. You might see some cats!'
     : currentMode.startsWith('mult')
       ? 'Multiply from right to left. Write any carried tens in the yellow boxes, meow!'
-      : 'Start adding from the Ones column. Write any carried numbers in the yellow boxes, meow!';
+      : 'Some cats has been lost. Start adding from the Ones column. Write any carried numbers in the yellow boxes and we can find them!';
 }
 
 function getExpectedExchanges() {
@@ -259,7 +259,7 @@ function checkAnswer() {
   const values = answerIds.map(id => document.getElementById(id));
   const hasInput = values.some(input => input.value !== '');
   if (!hasInput) {
-    document.getElementById('tutor-msg').textContent = 'Meow? Put your answer in the green boxes first, then check it!';
+    document.getElementById('tutor-msg').textContent = 'Where is your answer? Put your answer in the green boxes first, then check it so you can find cats!';
     values.forEach(input => input.classList.add('empty-error'));
     playSound('wrong');
     isProcessing = false;
@@ -289,7 +289,7 @@ function checkAnswer() {
     stats.correct++;
     updateStatsUI();
     addToHistory(`${currentProblemStr} = ${expected} ✅`);
-    document.getElementById('tutor-msg').textContent = 'Purrfect work! You got it! 🌟🐾';
+    document.getElementById('tutor-msg').textContent = 'Purrfect work! You found some cats! 🌟🐾';
     setTimeout(() => {
       if (isDivision) generateDivisionProblem();
       else generateColumnProblem();
@@ -306,7 +306,7 @@ function checkAnswer() {
   updateStatsUI();
   addToHistory(`${currentProblemStr} = ${userAnswer} ❌`, true);
   // Give encouragement without revealing the correct answer.
-  document.getElementById('tutor-msg').textContent = 'Not quite, little kitten. Give it another try and check your carries! Meow 🐾';
+  document.getElementById('tutor-msg').textContent = 'Not quite, little kitten. Give it another try and check your carries! Now one cat ran away 🐾';
   values.forEach(input => input.classList.add('wrong-input'));
   setTimeout(() => {
     isProcessing = false;
