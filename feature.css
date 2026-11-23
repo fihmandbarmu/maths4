@@ -143,3 +143,18 @@
     border-radius: 0;
   }
 }
+
+/* Shiny green page background */
+:root {
+  --bg-color: #35c759;
+}
+
+body {
+  background-color: #35c759 !important;
+  background-image:
+    radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.75) 0, rgba(255, 255, 255, 0.18) 8%, transparent 18%),
+    radial-gradient(circle at 78% 82%, rgba(205, 255, 112, 0.55) 0, transparent 24%),
+    linear-gradient(135deg, #82df67 0%, #31bd57 48%, #198f43 100%) !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+}
